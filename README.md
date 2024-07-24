@@ -1,209 +1,259 @@
 ```markdown
 # Task Manager
 
-Task Manager is a React frontend application integrated with a Django backend that allows users to manage tasks effectively. Users can add, view, and manage tasks in a clean and efficient interface.
-
 ## Description
 
-This project is a simple, yet fully functional Task Management application built with modern tools:
+Task Manager is a web application designed to help users organize and manage their tasks efficiently. The frontend is built using React, offering a simple and intuitive interface for task management. The backend is powered by Django REST framework, providing a robust API for task operations.
 
-- **Frontend**: React.js
-- **Backend**: Django (REST Framework)
-- **CSS Styling**: Custom CSS and styled-components
-- **HTTP Client**: Axios
-- **Routing**: React Router
+## Features
 
-The frontend provides a user-friendly interface for task management, while the backend handles the task data with a REST API.
+- Add, view, and manage tasks
+- Responsive and user-friendly interface
+- Task list with persistence
+- Pop-up notifications for user actions
+- Animated elements for improved user experience
+- RESTful API for task operations
 
 ## Installation Instructions
 
 ### Prerequisites
 
-- Node.js (v14+)
-- Python (v3.8+)
-- Django (v5.0.7)
-- npm or yarn
+- Node.js (v14.x or later)
+- npm (v6.x or later)
+- Python (v3.8 or later)
+- Django (v3.x or later)
 
-### Backend Setup (Django)
+### Frontend Setup
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/your-username/task-manager.git
-    cd task-manager/backend
-    ```
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/task-manager.git
+   cd task-manager
+   ```
 
-2. Create a virtual environment and activate it:
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-    ```
+2. **Navigate to the frontend directory:**
+   ```bash
+   cd frontend
+   ```
 
-3. Install the required packages:
-    ```bash
-    pip install -r requirements.txt
-    ```
+3. **Install the dependencies:**
+   ```bash
+   npm install
+   ```
 
-4. Apply the database migrations:
-    ```bash
-    python manage.py migrate
-    ```
+4. **Create a `.env` file in the root of the frontend directory and add your backend URL:**
+   ```
+   REACT_APP_BACKEND_URL=http://localhost:8000
+   ```
 
-5. Create a superuser (optional, for accessing the admin panel):
-    ```bash
-    python manage.py createsuperuser
-    ```
+5. **Start the frontend server:**
+   ```bash
+   npm start
+   ```
 
-6. Start the Django development server:
-    ```bash
-    python manage.py runserver
-    ```
+### Backend Setup
 
-### Frontend Setup (React)
+1. **Navigate to the backend directory:**
+   ```bash
+   cd ../backend
+   ```
 
-1. Navigate to the frontend directory:
-    ```bash
-    cd ../frontend
-    ```
+2. **Create a virtual environment:**
+   ```bash
+   python3 -m venv env
+   source env/bin/activate  # For Windows: env\Scripts\activate
+   ```
 
-2. Install the dependencies:
-    ```bash
-    npm install  # or `yarn install`
-    ```
+3. **Install the required Python packages:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-3. Start the React development server:
-    ```bash
-    npm start  # or `yarn start`
-    ```
+4. **Apply migrations:**
+   ```bash
+   python manage.py migrate
+   ```
+
+5. **Start the backend server:**
+   ```bash
+   python manage.py runserver
+   ```
 
 ## Usage
 
-### Starting the Application
+To use the Task Manager application, follow the installation instructions to set up both the frontend and the backend. Once both servers are running:
 
-- Make sure the backend Django server is running on `http://localhost:8000`.
-- Start the React frontend development server.
-- Open a browser and navigate to `http://localhost:3000` to use the Task Manager application.
-
-### Adding a Task
-
-1. Type the task title in the input field.
-2. Click the "Add Task" button.
-3. The task will appear in the task list below.
-
-### Viewing Tasks
-
-- All tasks added will be listed with their titles.
-- Tasks are fetched from the backend API and displayed dynamically.
-
-### Removing Tasks
-
-- Feature in development (refer to future commits for updates).
+- **Visit** `http://localhost:3000` to access the frontend interface.
+- **Manage tasks** by adding new tasks, viewing the list of tasks, and deleting tasks from the interface.
 
 ## Examples
 
-Below is the main structure and some key components of the application:
+### Add a Task
 
-### App Component
+1. **Enter the task title** in the input box.
+2. **Click the "Add Task" button** to add the task to the list.
 
-```jsx
-import React from 'react';
-import TaskList from './TaskList';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+### View Tasks
 
-function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route exact path="/" element={<TaskList />}>
-        </Route>
-      </Routes>
-    </Router>
-  );
-}
+1. **Open the application** to view the list of tasks.
+2. **The tasks are displayed** in a list format.
 
-export default App;
-```
+### Pop-up Notification
 
-### TaskList Component
-
-```jsx
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './TaskList.css';
-
-function TaskList() {
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState('');
-  const [showPopup, setShowPopup] = useState(false);
-
-  useEffect(() => {
-    fetchTasks();
-  }, []);
-
-  const fetchTasks = async () => {
-    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/tasks/`);
-    setTasks(response.data);
-  };
-
-  const addTask = async () => {
-    if (!newTask.trim()) {
-      setShowPopup(true);
-      return;
-    }
-    await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/tasks/`, { title: newTask });
-    setNewTask('');
-    fetchTasks();
-  };
-
-  const closePopup = () => {
-    setShowPopup(false);
-  };
-
-  return (
-    <div className='task-list-container'>
-      <header>Task Manager</header>
-      <input 
-        type="text" 
-        value={newTask}
-        onChange={(e) => setNewTask(e.target.value)} 
-      />
-      <button onClick={addTask}>Add Task</button>
-      <ul>
-        {tasks.map(task => (
-          <li key={task.id}>{task.title}</li>
-        ))}
-      </ul>
-
-      {showPopup && (
-        <div className='popup'>
-          <p>Please enter a task!</p>
-          <button onClick={closePopup}>OK</button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default TaskList;
-```
-
-### Backend Models
-
-```python
-from django.db import models
-
-class Task(models.Model):
-    title = models.CharField(max_length=200)
-    completed = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.title
-```
+1. **Attempt to add an empty task.**
+2. A **pop-up notification** will appear prompting to enter a task.
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for more details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+## Acknowledgements
+
+- **React** for the powerful frontend library
+- **Django** for the robust backend framework
+- **Axios** for handling HTTP requests
+- **Styled Components** for the modular CSS styling
+- **React Router Dom** for routing management
+- **React Testing Library** for testing utilities
+
+## Contributing
+
+Contributions are welcome! Please read our [CONTRIBUTING](CONTRIBUTING.md) guidelines for more information.
+
+## Support
+
+If you have any questions or issues, please open an issue on GitHub.
 
 ---
 
-This README provides the necessary instructions and insights to understand the project's structure, functionality, and how to set up and use it efficiently. For any further questions or contributions, feel free to raise issues or pull requests in the GitHub repository.
+**Happy Task Managing!**
+``````markdown
+# Task Manager
+
+## Description
+
+Task Manager is a web application designed to help users organize and manage their tasks efficiently. The frontend is built using React, offering a simple and intuitive interface for task management. The backend is powered by Django REST framework, providing a robust API for task operations.
+
+## Features
+
+- Add, view, and manage tasks
+- Responsive and user-friendly interface
+- Task list with persistence
+- Pop-up notifications for user actions
+- Animated elements for improved user experience
+- RESTful API for task operations
+
+## Installation Instructions
+
+### Prerequisites
+
+- Node.js (v14.x or later)
+- npm (v6.x or later)
+- Python (v3.8 or later)
+- Django (v3.x or later)
+
+### Frontend Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/task-manager.git
+   cd task-manager
+   ```
+
+2. **Navigate to the frontend directory:**
+   ```bash
+   cd frontend
+   ```
+
+3. **Install the dependencies:**
+   ```bash
+   npm install
+   ```
+
+4. **Create a `.env` file in the root of the frontend directory and add your backend URL:**
+   ```
+   REACT_APP_BACKEND_URL=http://localhost:8000
+   ```
+
+5. **Start the frontend server:**
+   ```bash
+   npm start
+   ```
+
+### Backend Setup
+
+1. **Navigate to the backend directory:**
+   ```bash
+   cd ../backend
+   ```
+
+2. **Create a virtual environment:**
+   ```bash
+   python3 -m venv env
+   source env/bin/activate  # For Windows: env\Scripts\activate
+   ```
+
+3. **Install the required Python packages:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Apply migrations:**
+   ```bash
+   python manage.py migrate
+   ```
+
+5. **Start the backend server:**
+   ```bash
+   python manage.py runserver
+   ```
+
+## Usage
+
+To use the Task Manager application, follow the installation instructions to set up both the frontend and the backend. Once both servers are running:
+
+- **Visit** `http://localhost:3000` to access the frontend interface.
+- **Manage tasks** by adding new tasks, viewing the list of tasks, and deleting tasks from the interface.
+
+## Examples
+
+### Add a Task
+
+1. **Enter the task title** in the input box.
+2. **Click the "Add Task" button** to add the task to the list.
+
+### View Tasks
+
+1. **Open the application** to view the list of tasks.
+2. **The tasks are displayed** in a list format.
+
+### Pop-up Notification
+
+1. **Attempt to add an empty task.**
+2. A **pop-up notification** will appear prompting to enter a task.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+## Acknowledgements
+
+- **React** for the powerful frontend library
+- **Django** for the robust backend framework
+- **Axios** for handling HTTP requests
+- **Styled Components** for the modular CSS styling
+- **React Router Dom** for routing management
+- **React Testing Library** for testing utilities
+
+## Contributing
+
+Contributions are welcome! Please read our [CONTRIBUTING](CONTRIBUTING.md) guidelines for more information.
+
+## Support
+
+If you have any questions or issues, please open an issue on GitHub.
+
+---
+
+**Happy Task Managing!**
 ```
